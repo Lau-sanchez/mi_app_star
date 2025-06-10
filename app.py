@@ -19,7 +19,7 @@ api_key = st.secrets["OPENAI_API_KEY"]
 client = openai.OpenAI(api_key=api_key)
 
 # Paso 2: Generar primer STAR
-if st.button("🪄 Generar primera versión en formato STAR"):
+if st.button("🪄 Ver versión en formato STAR"):
     if experiencia_libre:
         with st.spinner("Generando primera versión..."):
             prompt_star = f"""
