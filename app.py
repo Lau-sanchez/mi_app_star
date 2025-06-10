@@ -48,7 +48,9 @@ Empecemos: primero hazme tus preguntas.
             client = openai.OpenAI(api_key=api_key)
 
             response = client.chat.completions.create(
-                model="gpt-4o",  # Si da error, cambiar a "gpt-3.5-turbo"
+               response = client.chat.completions.create(
+    model="gpt-3.5-turbo",
+
                 messages=[
                     {"role": "user", "content": prompt}
                 ],
