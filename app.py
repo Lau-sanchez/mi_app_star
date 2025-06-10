@@ -16,7 +16,6 @@ experiencia_libre = st.text_area(
     "✍️ Escribe tu experiencia como si se la contaras a una amiga. Dale detalles del nombre de tu rol, en dónde trabajaste, qué hiciste durante ese tiempo y qué resultados lograste. No dudes en ser detallada, eso ayudará a la calidad de tu respuesta."
 )
 
-
 # Obtener API key
 api_key = st.secrets["OPENAI_API_KEY"]
 client = openai.OpenAI(api_key=api_key)
@@ -77,28 +76,28 @@ Versión inicial STAR:
 """
 
             response2 = client.chat.completions.create(
-    model="gpt-3.5-turbo",
-    messages=[{"role": "user", "content": prompt_preguntas}],
-    max_tokens=800,
-    temperature=0.7,
-)
+                model="gpt-3.5-turbo",
+                messages=[{"role": "user", "content": prompt_preguntas}],
+                max_tokens=800,
+                temperature=0.7,
+            )
 
-preguntas_ia = response2.choices[0].message.content
+            preguntas_ia = response2.choices[0].message.content
 
-# Mostrar preguntas
-st.subheader("🤖 Preguntas de la IA para mejorar tu historia:")
-st.markdown(preguntas_ia)
+            # Mostrar preguntas
+            st.subheader("🤖 Preguntas de la IA para mejorar tu historia:")
+            st.markdown(preguntas_ia)
 
-# Instrucción clara
-st.markdown("✍️ *Responde a las preguntas directamente en el siguiente cuadro. No borres la versión anterior: agrega tus respuestas debajo o entre secciones para construir una historia más completa.*")
+            # Instrucción clara
+            st.markdown("✍️ *Responde a las preguntas directamente en el siguiente cuadro. No borres la versión anterior: agrega tus respuestas debajo o entre secciones para construir una historia más completa.*")
 
-# Mostrar versión editable con el STAR generado
-respuesta_completa = st.text_area(
-    "📝 Tu versión STAR editable:",
-    value=st.session_state["respuesta_inicial"],
-    height=350
-)
+            # Mostrar versión editable con el STAR generado
+            respuesta_completa = st.text_area(
+                "📝 Tu versión STAR editable:",
+                value=st.session_state["respuesta_inicial"],
+                height=350
+            )
 
-# Guardar para uso posterior (opcional)
-st.session_state["respuesta_completa"] = respuesta_completa
+            # Guardar para uso posterior (opcional)
+            st.session_state["respuesta_completa"] = respuesta_completa
 
