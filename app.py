@@ -35,7 +35,7 @@ Actúa como un experto en empleabilidad. Recibirás una experiencia escrita libr
 Tu tarea es transformarla en una respuesta en formato STAR clara, profesional y lista para entrevista.
 
 Sigue estas instrucciones:
-1. Estructura la respuesta en **Situación**, **Tarea**, **Acciones** (formato de viñetas, mínimo 60% del texto) y **Resultados** (con datos numéricos si es posible).
+1. Estructura la respuesta en **Situación** (que nombre la empresa y por qué la tarea era importante), **Tarea** (corta que haga referencia a la principal responsabildiad que fue encargada), **Acciones** (formato de viñetas, mínimo 60% del texto, redactadas en primera persona) y **Resultados** (con datos numéricos si es posible y con datos sobre la influencia en los resultados de la empresa).
 2. Usa lenguaje profesional, en primera persona.
 
 Aquí está la experiencia:
