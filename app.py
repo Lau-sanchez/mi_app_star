@@ -1,67 +1,79 @@
 import streamlit as st
 import openai
-import os
 
-# Título de la app
-st.title("Creador de Experiencias en Formato STAR ⭐️ con IA 🤖 (Versión con Secrets)")
+# Título
+st.title("🧠 Asistente IA - Formato STAR para entrevistas")
 
-# Instrucciones
-st.write("Paso 1: Cuéntame tu experiencia de manera libre. No te preocupes por el formato. La IA te hará preguntas para ayudarte a estructurarla en formato STAR.")
+# Instrucciones iniciales
+st.markdown("""
+**👋 Bienvenida**
 
-# Entrada de experiencia libre
-experiencia_libre = st.text_area("✍️ Escribe aquí tu experiencia (libre):")
+Cuéntame tu experiencia de forma libre. No te preocupes por el formato. Luego, la IA te ayudará a convertirla al formato STAR y hacer mejoras.
+""")
 
-# Obtener API Key desde secrets
+# Paso 1: Entrada libre
+experiencia_libre = st.text_area("✍️ Escribe tu experiencia (como si se la contaras a una amiga):")
+
+# Obtener API key
 api_key = st.secrets["OPENAI_API_KEY"]
+client = openai.OpenAI(api_key=api_key)
 
-# Botón para generar preguntas
-if st.button("🤖 Empezar coaching con IA"):
+# Paso 2: Generar primer STAR
+if st.button("🪄 Generar primera versión en formato STAR"):
     if experiencia_libre:
-        with st.spinner("La IA está generando preguntas... ⏳"):
-            # Prompt mejorado
-            prompt = f"""
-Actúa como coach experto en empleabilidad.
-
-Voy a darte una experiencia profesional o personal que quiero usar como ejemplo en entrevistas.
-
+        with st.spinner("Generando primera versión..."):
+            prompt_star = f"""
+Actúa como un experto en empleabilidad. Recibirás una experiencia profesional escrita libremente.
 Tu tarea es:
-1️⃣ Leer atentamente la experiencia que te daré.
-2️⃣ Hacer todas las preguntas que consideres necesarias para entender bien:
-   - La Situación
-   - La Tarea
-   - Las Acciones
-   - Los Resultados
 
-No te limites a 4 preguntas. Formula todas las preguntas que necesites hasta que sientas que tienes un contexto completo y detallado.
+1. Interpretar la historia.
+2. Crear una primera versión tentativa en formato STAR: Situación, Tarea, Acción, Resultado.
+3. Avisa que luego harás preguntas para mejorarla.
 
-Cuando creas que ya tienes suficiente información, avísame y luego genera el ejemplo completo en formato STAR, claro, profesional, en primera persona, listo para usar en entrevistas.
-
-Aquí va la experiencia:
+Aquí está la experiencia:
 \"\"\"
 {experiencia_libre}
 \"\"\"
-
-Empecemos: primero hazme tus preguntas.
 """
-
-            # Llamada a la API de OpenAI
-            client = openai.OpenAI(api_key=api_key)
 
             response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
-                messages=[
-                    {"role": "user", "content": prompt}
-                ],
-                max_tokens=1500,
-                temperature=0.7
+                messages=[{"role": "user", "content": prompt_star}],
+                max_tokens=1200,
+                temperature=0.7,
             )
 
-            # Obtener respuesta de la IA
-            respuesta_ia = response.choices[0].message.content
+            respuesta_inicial = response.choices[0].message.content
+            st.subheader("📄 Primera versión STAR:")
+            st.write(respuesta_inicial)
 
-            # Mostrar resultado
-            st.subheader("📝 Respuesta de la IA:")
-            st.write(respuesta_ia)
-
+            st.session_state["respuesta_inicial"] = respuesta_inicial
+            st.session_state["experiencia"] = experiencia_libre
     else:
-        st.warning("⚠️ Por favor escribe primero tu experiencia.")
+        st.warning("Por favor escribe tu experiencia antes de continuar.")
+
+# Paso 3: Solicitar mejora
+if "respuesta_inicial" in st.session_state:
+    if st.button("🔍 Mejorar versión con preguntas"):
+        with st.spinner("La IA está generando preguntas de seguimiento..."):
+            prompt_preguntas = f"""
+A continuación recibirás una experiencia ya organizada en formato STAR. 
+Tu tarea ahora es hacer preguntas concretas para poder mejorarla. 
+Evita preguntas genéricas. Haz entre 3 y 5 preguntas específicas que te ayuden a obtener más contexto o detalles relevantes.
+
+Versión inicial STAR:
+\"\"\"
+{st.session_state["respuesta_inicial"]}
+\"\"\"
+"""
+
+            response2 = client.chat.completions.create(
+                model="gpt-3.5-turbo",
+                messages=[{"role": "user", "content": prompt_preguntas}],
+                max_tokens=800,
+                temperature=0.7,
+            )
+
+            preguntas_ia = response2.choices[0].message.content
+            st.subheader("🤖 Preguntas de la IA para mejorar tu historia:")
+            st.write(preguntas_ia)
