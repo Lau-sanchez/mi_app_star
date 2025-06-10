@@ -47,16 +47,15 @@ Empecemos: primero hazme tus preguntas.
             # Llamada a la API de OpenAI
             client = openai.OpenAI(api_key=api_key)
 
-            response = client.chat.completions.create(
-               response = client.chat.completions.create(
+          response = client.chat.completions.create(
     model="gpt-3.5-turbo",
+    messages=[
+        {"role": "user", "content": prompt}
+    ],
+    max_tokens=1500,
+    temperature=0.7
+)
 
-                messages=[
-                    {"role": "user", "content": prompt}
-                ],
-                max_tokens=1500,
-                temperature=0.7,
-            )
 
             # Obtener respuesta de la IA
             respuesta_ia = response.choices[0].message.content
