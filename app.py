@@ -66,7 +66,7 @@ if st.session_state.get("fase") == "generado":
 if st.session_state.get("fase") == "generado" and st.button("🔍 Mejorar versión con preguntas"):
     with st.spinner("La IA está generando preguntas de mejora..."):
         prompt_preguntas = f"""
-Aquí tienes una experiencia ya escrita en formato STAR. Tu tarea es hacer entre 3 y 5 preguntas específicas para mejorar esta historia. Evita preguntas genéricas.
+Aquí tienes una experiencia ya escrita en formato STAR. Tu tarea es hacer entre 3 y 5 preguntas específicas para mejorar esta historia. Evita preguntas genéricas, incluye al menos 1 pregunta que ayude a identificar herramientas, metodologías o programas usado por la persona en su experiencia y preguntas que le ayuden a identificar resultados cuantificables de su experiencia para la empresa.
 
 Texto STAR:
 \"\"\"
