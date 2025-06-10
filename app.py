@@ -11,9 +11,13 @@ st.markdown("""
 Cuéntame tu experiencia de forma libre. La IA te ayudará a convertirla al formato STAR y luego te hará preguntas para mejorarla.
 """)
 
-# Entrada de experiencia (única caja de texto)
-experiencia = st.text_area(
+# Entrada de experiencia libre
+if "experiencia_inicial" not in st.session_state:
+    st.session_state["experiencia_inicial"] = ""
+
+st.session_state["experiencia_inicial"] = st.text_area(
     "✍️ Escribe tu experiencia como si se la contaras a una amiga. Dale detalles del nombre de tu rol, en dónde trabajaste, qué hiciste durante ese tiempo y qué resultados lograste. No dudes en ser detallada, eso ayudará a la calidad de tu respuesta.",
+    value=st.session_state["experiencia_inicial"],
     height=350
 )
 
@@ -21,9 +25,9 @@ experiencia = st.text_area(
 api_key = st.secrets["OPENAI_API_KEY"]
 client = openai.OpenAI(api_key=api_key)
 
-# Paso 1: Generar primera versión STAR
+# Paso 1: Generar versión STAR
 if st.button("🪄 Ver versión en formato STAR"):
-    if experiencia:
+    if st.session_state["experiencia_inicial"]:
         with st.spinner("Generando primera versión..."):
             prompt_star = f"""
 Actúa como un experto en empleabilidad. Recibirás una experiencia escrita libremente.
@@ -36,7 +40,7 @@ Sigue estas instrucciones:
 
 Aquí está la experiencia:
 \"\"\"
-{experiencia}
+{st.session_state["experiencia_inicial"]}
 \"\"\"
 
 Devuélveme únicamente el texto en formato STAR.
@@ -50,28 +54,23 @@ Devuélveme únicamente el texto en formato STAR.
             )
 
             resultado = response.choices[0].message.content
-            st.session_state["experiencia"] = resultado
+            st.session_state["star_generado"] = resultado
             st.session_state["fase"] = "generado"
 
-# Mostrar STAR generado en la misma caja
+# Mostrar STAR generado como texto (no editable)
 if st.session_state.get("fase") == "generado":
     st.subheader("📄 Tu experiencia en formato STAR:")
-    experiencia_actualizada = st.text_area(
-        "📝 Puedes editar directamente aquí o agregar información nueva",
-        value=st.session_state["experiencia"],
-        height=400
-    )
-    st.session_state["experiencia"] = experiencia_actualizada
+    st.markdown(st.session_state["star_generado"])
 
 # Paso 2: Mejorar con preguntas
-if st.session_state.get("experiencia") and st.button("🔍 Mejorar versión con preguntas"):
+if st.session_state.get("fase") == "generado" and st.button("🔍 Mejorar versión con preguntas"):
     with st.spinner("La IA está generando preguntas de mejora..."):
         prompt_preguntas = f"""
 Aquí tienes una experiencia ya escrita en formato STAR. Tu tarea es hacer entre 3 y 5 preguntas específicas para mejorar esta historia. Evita preguntas genéricas.
 
 Texto STAR:
 \"\"\"
-{st.session_state["experiencia"]}
+{st.session_state["star_generado"]}
 \"\"\"
 """
 
@@ -87,5 +86,5 @@ Texto STAR:
         st.subheader("🤖 Preguntas para mejorar tu historia:")
         st.markdown(preguntas)
 
-        st.info("✍️ Responde directamente dentro del cuadro de texto donde está tu experiencia. Puedes agregar tus respuestas donde mejor encajen.")
+        st.info("✍️ *Responde directamente dentro del cuadro de texto inicial donde escribiste tu experiencia. No borres lo anterior, solo agrégalo o edítalo para construir una versión más sólida.*")
 
