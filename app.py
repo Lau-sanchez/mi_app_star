@@ -12,7 +12,10 @@ Cuéntame tu experiencia de forma libre. No te preocupes por el formato. Luego, 
 """)
 
 # Paso 1: Entrada libre
-experiencia_libre = st.text_area("✍️ Escribe tu experiencia (como si se la contaras a una amiga):")
+experiencia_libre = st.text_area(
+    "✍️ Escribe tu experiencia como si se la contaras a una amiga. Dale detalles del nombre de tu rol, en dónde trabajaste, qué hiciste durante ese tiempo y qué resultados lograste. No dudes en ser detallada, eso ayudará a la calidad de tu respuesta."
+)
+
 
 # Obtener API key
 api_key = st.secrets["OPENAI_API_KEY"]
