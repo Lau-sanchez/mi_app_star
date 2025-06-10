@@ -8,37 +8,35 @@ st.title("👩‍💻 Tu experiencia en Formato STAR ⭐️ con IA 🤖")
 st.markdown("""
 **👋 Bienvenida**
 
-Cuéntame tu experiencia de forma libre, la IA te ayudará a convertirla al formato STAR y hacer mejoras.
+Cuéntame tu experiencia de forma libre. La IA te ayudará a convertirla al formato STAR y luego te hará preguntas para mejorarla.
 """)
 
-# Paso 1: Entrada libre
-experiencia_libre = st.text_area(
-    "✍️ Escribe tu experiencia como si se la contaras a una amiga. Dale detalles del nombre de tu rol, en dónde trabajaste, qué hiciste durante ese tiempo y qué resultados lograste. No dudes en ser detallada, eso ayudará a la calidad de tu respuesta."
+# Entrada de experiencia (única caja de texto)
+experiencia = st.text_area(
+    "✍️ Escribe tu experiencia como si se la contaras a una amiga. Dale detalles del nombre de tu rol, en dónde trabajaste, qué hiciste durante ese tiempo y qué resultados lograste. No dudes en ser detallada, eso ayudará a la calidad de tu respuesta.",
+    height=350
 )
 
 # Obtener API key
 api_key = st.secrets["OPENAI_API_KEY"]
 client = openai.OpenAI(api_key=api_key)
 
-# Paso 2: Generar primer STAR
+# Paso 1: Generar primera versión STAR
 if st.button("🪄 Ver versión en formato STAR"):
-    if experiencia_libre:
+    if experiencia:
         with st.spinner("Generando primera versión..."):
             prompt_star = f"""
 Actúa como un experto en empleabilidad. Recibirás una experiencia escrita libremente.
 
-Tu tarea es transformar esa experiencia en una respuesta en formato STAR clara, profesional y lista para entrevista.
+Tu tarea es transformarla en una respuesta en formato STAR clara, profesional y lista para entrevista.
 
 Sigue estas instrucciones:
-
-1. Estructura la respuesta en cuatro secciones: **Situación**, **Tarea**, **Acciones** y **Resultados**.
-2. En la sección **Acciones**, escribe en formato de viñetas (bullet points). Esta sección debe ser la más extensa (al menos el 60% del total).
-3. En la sección **Resultados**, incluye números o datos cuantitativos concretos si están presentes en la experiencia o si se pueden inferir a partir del contexto.
-4. Usa lenguaje profesional en primera persona, claro y directo.
+1. Estructura la respuesta en **Situación**, **Tarea**, **Acciones** (formato de viñetas, mínimo 60% del texto) y **Resultados** (con datos numéricos si es posible).
+2. Usa lenguaje profesional, en primera persona.
 
 Aquí está la experiencia:
 \"\"\"
-{experiencia_libre}
+{experiencia}
 \"\"\"
 
 Devuélveme únicamente el texto en formato STAR.
@@ -51,53 +49,43 @@ Devuélveme únicamente el texto en formato STAR.
                 temperature=0.7,
             )
 
-            respuesta_inicial = response.choices[0].message.content
-            st.subheader("📄 Primera versión STAR:")
-            st.write(respuesta_inicial)
+            resultado = response.choices[0].message.content
+            st.session_state["experiencia"] = resultado
+            st.session_state["fase"] = "generado"
 
-            st.session_state["respuesta_inicial"] = respuesta_inicial
-            st.session_state["experiencia"] = experiencia_libre
-    else:
-        st.warning("Por favor escribe tu experiencia antes de continuar.")
+# Mostrar STAR generado en la misma caja
+if st.session_state.get("fase") == "generado":
+    st.subheader("📄 Tu experiencia en formato STAR:")
+    experiencia_actualizada = st.text_area(
+        "📝 Puedes editar directamente aquí o agregar información nueva",
+        value=st.session_state["experiencia"],
+        height=400
+    )
+    st.session_state["experiencia"] = experiencia_actualizada
 
-# Paso 3: Solicitar mejora
-if "respuesta_inicial" in st.session_state:
-    if st.button("🔍 Mejorar versión con preguntas"):
-        with st.spinner("La IA está generando preguntas de seguimiento..."):
-            prompt_preguntas = f"""
-A continuación recibirás una experiencia ya organizada en formato STAR. 
-Tu tarea ahora es hacer preguntas concretas para poder mejorarla. 
-Evita preguntas genéricas. Haz entre 3 y 5 preguntas específicas que te ayuden a obtener más contexto o detalles relevantes.
+# Paso 2: Mejorar con preguntas
+if st.session_state.get("experiencia") and st.button("🔍 Mejorar versión con preguntas"):
+    with st.spinner("La IA está generando preguntas de mejora..."):
+        prompt_preguntas = f"""
+Aquí tienes una experiencia ya escrita en formato STAR. Tu tarea es hacer entre 3 y 5 preguntas específicas para mejorar esta historia. Evita preguntas genéricas.
 
-Versión inicial STAR:
+Texto STAR:
 \"\"\"
-{st.session_state["respuesta_inicial"]}
+{st.session_state["experiencia"]}
 \"\"\"
 """
 
-            response2 = client.chat.completions.create(
-                model="gpt-3.5-turbo",
-                messages=[{"role": "user", "content": prompt_preguntas}],
-                max_tokens=800,
-                temperature=0.7,
-            )
+        response2 = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt_preguntas}],
+            max_tokens=800,
+            temperature=0.7,
+        )
 
-            preguntas_ia = response2.choices[0].message.content
+        preguntas = response2.choices[0].message.content
 
-            # Mostrar preguntas
-            st.subheader("🤖 Preguntas de la IA para mejorar tu historia:")
-            st.markdown(preguntas_ia)
+        st.subheader("🤖 Preguntas para mejorar tu historia:")
+        st.markdown(preguntas)
 
-            # Instrucción clara
-            st.markdown("✍️ *Responde a las preguntas directamente en el siguiente cuadro. No borres la versión anterior: agrega tus respuestas debajo o entre secciones para construir una historia más completa.*")
-
-            # Mostrar versión editable con el STAR generado
-            respuesta_completa = st.text_area(
-                "📝 Tu versión STAR editable:",
-                value=st.session_state["respuesta_inicial"],
-                height=350
-            )
-
-            # Guardar para uso posterior (opcional)
-            st.session_state["respuesta_completa"] = respuesta_completa
+        st.info("✍️ Responde directamente dentro del cuadro de texto donde está tu experiencia. Puedes agregar tus respuestas donde mejor encajen.")
 
