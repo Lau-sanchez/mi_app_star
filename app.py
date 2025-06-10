@@ -2,7 +2,7 @@ import streamlit as st
 import openai
 
 # Título
-st.title("🧠 Cuenta tus experiencia sen formato STAR - Asistente IA")
+st.title("🧠 Tus experiencias en formato STAR - Asistente IA")
 
 # Instrucciones iniciales
 st.markdown("""
