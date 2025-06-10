@@ -2,13 +2,13 @@ import streamlit as st
 import openai
 
 # Título
-st.title("🧠 Asistente IA - Formato STAR para entrevistas")
+st.title("🧠 Cuenta tus experiencia sen formato STAR - Asistente IA")
 
 # Instrucciones iniciales
 st.markdown("""
 **👋 Bienvenida**
 
-Cuéntame tu experiencia de forma libre. No te preocupes por el formato. Luego, la IA te ayudará a convertirla al formato STAR y hacer mejoras.
+Cuéntame tu experiencia de forma libre, la IA te ayudará a convertirla al formato STAR y hacer mejoras.
 """)
 
 # Paso 1: Entrada libre
@@ -26,17 +26,23 @@ if st.button("🪄 Ver versión en formato STAR"):
     if experiencia_libre:
         with st.spinner("Generando primera versión..."):
             prompt_star = f"""
-Actúa como un experto en empleabilidad. Recibirás una experiencia profesional escrita libremente.
-Tu tarea es:
+Actúa como un experto en empleabilidad. Recibirás una experiencia escrita libremente.
 
-1. Interpretar la historia.
-2. Crear una primera versión tentativa en formato STAR: Situación, Tarea, Acción, Resultado.
-3. Avisa que luego harás preguntas para mejorarla.
+Tu tarea es transformar esa experiencia en una respuesta en formato STAR clara, profesional y lista para entrevista.
+
+Sigue estas instrucciones:
+
+1. Estructura la respuesta en cuatro secciones: **Situación**, **Tarea**, **Acciones** y **Resultados**.
+2. En la sección **Acciones**, escribe en formato de viñetas (bullet points). Esta sección debe ser la más extensa (al menos el 60% del total).
+3. En la sección **Resultados**, incluye números o datos cuantitativos concretos si están presentes en la experiencia o si se pueden inferir a partir del contexto.
+4. Usa lenguaje profesional en primera persona, claro y directo.
 
 Aquí está la experiencia:
 \"\"\"
 {experiencia_libre}
 \"\"\"
+
+Devuélveme únicamente el texto en formato STAR.
 """
 
             response = client.chat.completions.create(
