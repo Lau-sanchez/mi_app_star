@@ -28,7 +28,7 @@ client = openai.OpenAI(api_key=api_key)
 # Paso 1: Generar versión STAR
 if st.button("🪄 Ver versión en formato STAR"):
     if st.session_state["experiencia_inicial"]:
-        with st.spinner("Generando primera versión..."):
+        with st.spinner("Generando tu versión STAR..."):
             prompt_star = f"""
 Actúa como un experto en empleabilidad. Recibirás una experiencia escrita libremente.
 
